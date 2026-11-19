@@ -32,7 +32,7 @@ export default function AuthModal() {
     if (tab === 'register' && form.name.trim().length < 3) e.name = 'Ingresa tu nombre completo';
     if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email)) e.email = 'Correo electrónico inválido';
     if (form.password.length < 6) e.password = 'Mínimo 6 caracteres';
-    if (tab === 'register' && !form.role) e.role = 'Selecciona cómo quieres usar Planify';
+    if (!form.role) e.role = 'Selecciona cómo quieres usar Planify';
     setErrors(e);
     return Object.keys(e).length === 0;
   };
@@ -41,9 +41,9 @@ export default function AuthModal() {
     ev.preventDefault();
     if (!validate()) return;
     if (tab === 'login') {
-      // Simulación: el nombre se deriva del correo y se entra como cliente
+      // Simulación: el nombre se deriva del correo
       const name = form.email.split('@')[0].replace(/[._-]/g, ' ').replace(/\b\w/g, (c) => c.toUpperCase());
-      login({ name, email: form.email, role: 'cliente' });
+      login({ name, email: form.email, role: form.role });
     } else {
       login({ name: form.name.trim(), email: form.email, role: form.role });
     }
@@ -104,9 +104,8 @@ export default function AuthModal() {
             {errors.password && <p className="error-text">{errors.password}</p>}
           </div>
 
-          {tab === 'register' && (
-            <div>
-              <label className="label">¿Cómo usarás Planify?</label>
+          <div>
+              <label className="label">{tab === 'login' ? 'Entrar como' : '¿Cómo usarás Planify?'}</label>
               <div className="grid gap-3">
                 {ROLES.map(({ id, title, desc, icon: Icon }) => (
                   <button
@@ -129,7 +128,6 @@ export default function AuthModal() {
               </div>
               {errors.role && <p className="error-text">{errors.role}</p>}
             </div>
-          )}
 
           <button type="submit" className="btn-gold w-full py-3">
             {tab === 'login' ? 'Iniciar sesión' : 'Crear mi cuenta'}

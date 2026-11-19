@@ -69,7 +69,8 @@ function ReviewList({ service }) {
 }
 
 export default function ServiceDetailModal() {
-  const { detailId, setDetailId, getService, event, addToCart, openChat, setView } = useApp();
+  const { detailId, setDetailId, getService, event, addToCart, openChat, setView, role } = useApp();
+  const isClient = role === 'cliente';
   const [photo, setPhoto] = useState(0);
   useEffect(() => setPhoto(0), [detailId]);
   const service = detailId ? getService(detailId) : null;
@@ -115,7 +116,7 @@ export default function ServiceDetailModal() {
           </div>
           <div className="mt-3 flex flex-wrap gap-1.5">
             <VerifiedBadge verified={service.provider.verified} />
-            <AvailabilityBadge service={service} date={event.date} />
+            {isClient && <AvailabilityBadge service={service} date={event.date} />}
           </div>
           <p className="mt-4 text-sm leading-relaxed text-coal/80">{service.description}</p>
           <ul className="mt-4 space-y-1.5">
@@ -129,21 +130,25 @@ export default function ServiceDetailModal() {
             <p className="text-2xl font-bold">{formatCOP(service.price)}</p>
             <p className="text-xs text-coal/60">{UNIT_LABEL[service.unit]}</p>
           </div>
-          <div className="mt-5 flex gap-2">
-            <button onClick={() => openChat(service.id)} className="btn-outline flex-1">
-              <MessageCircle className="h-4 w-4" /> Chatear
-            </button>
-            <button
-              onClick={() => {
-                addToCart(service.id);
-                setDetailId(null);
-                setView('cart');
-              }}
-              className="btn-gold flex-1"
-            >
-              <ShoppingBag className="h-4 w-4" /> Agregar al carrito
-            </button>
-          </div>
+          {isClient ? (
+            <div className="mt-5 flex gap-2">
+              <button onClick={() => openChat(service.id)} className="btn-outline flex-1">
+                <MessageCircle className="h-4 w-4" /> Chatear
+              </button>
+              <button
+                onClick={() => {
+                  addToCart(service.id);
+                  setDetailId(null);
+                  setView('cart');
+                }}
+                className="btn-gold flex-1"
+              >
+                <ShoppingBag className="h-4 w-4" /> Agregar al carrito
+              </button>
+            </div>
+          ) : (
+            <p className="mt-5 text-xs text-coal/60">Vista previa: así ven tu servicio los clientes.</p>
+          )}
         </div>
       </div>
       <div className="border-t border-coal/10 p-7">

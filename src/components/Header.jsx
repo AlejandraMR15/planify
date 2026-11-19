@@ -147,12 +147,14 @@ function ProfileMenu() {
             <LayoutDashboard className="h-4 w-4 text-gold" />
             {role === 'proveedor' ? 'Mi panel de proveedor' : 'Mi evento'}
           </button>
-          <button
-            onClick={() => { setView('chat'); setOpen(false); }}
-            className="flex w-full items-center gap-2 rounded-lg px-3 py-2 text-sm hover:bg-cream-300"
-          >
-            <MessageCircle className="h-4 w-4 text-gold" /> Mensajes
-          </button>
+          {role === 'cliente' && (
+            <button
+              onClick={() => { setView('chat'); setOpen(false); }}
+              className="flex w-full items-center gap-2 rounded-lg px-3 py-2 text-sm hover:bg-cream-300"
+            >
+              <MessageCircle className="h-4 w-4 text-gold" /> Mensajes
+            </button>
+          )}
           <button
             onClick={() => { logout(); setOpen(false); }}
             className="flex w-full items-center gap-2 rounded-lg px-3 py-2 text-sm text-red-600 hover:bg-red-50"
@@ -204,32 +206,36 @@ function EventBar() {
 
 export default function Header() {
   const { user, role, view, setView, cartCount, unreadCount, setAuthModal } = useApp();
+  const isClient = role === 'cliente';
 
   return (
     <header className="sticky top-0 z-40 border-b border-white/10 bg-ink/90 backdrop-blur-md">
       <div className="mx-auto flex max-w-7xl flex-wrap items-center gap-x-3 gap-y-2 px-4 py-3 sm:px-6 md:flex-nowrap">
-        <button onClick={() => setView('explore')} className="flex shrink-0 items-baseline gap-1">
+        <button onClick={() => setView(isClient ? 'explore' : 'provider')} className="flex shrink-0 items-baseline gap-1">
           <span className="font-serif text-2xl font-semibold tracking-tight text-cream sm:text-[1.7rem]">Planify</span>
           <span className="h-1.5 w-1.5 rounded-full bg-gold-soft" />
         </button>
 
-        <SearchBar className="mx-2 hidden max-w-md flex-1 md:flex" />
+        {isClient && <SearchBar className="mx-2 hidden max-w-md flex-1 md:flex" />}
 
         <div className="ml-auto flex items-center gap-1 sm:gap-2">
-          <RoleSwitch />
+          {/* Sin sesión se puede probar cualquier rol; con sesión, el rol lo define la cuenta */}
+          {!user && <RoleSwitch />}
           <nav className="flex items-center">
-            <NavItem icon={Compass} label="Explorar" active={view === 'explore'} onClick={() => setView('explore')} />
-            <NavItem icon={MessageCircle} label="Mensajes" badge={unreadCount} active={view === 'chat'} onClick={() => setView('chat')} />
-            {role === 'proveedor' ? (
-              <NavItem icon={LayoutDashboard} label="Mi panel" active={view === 'provider'} onClick={() => setView('provider')} />
+            {isClient ? (
+              <>
+                <NavItem icon={Compass} label="Explorar" active={view === 'explore'} onClick={() => setView('explore')} />
+                <NavItem icon={MessageCircle} label="Mensajes" badge={unreadCount} active={view === 'chat'} onClick={() => setView('chat')} />
+                <NavItem
+                  icon={ShoppingBag}
+                  label="Carrito"
+                  badge={cartCount}
+                  active={['cart', 'checkout', 'confirmation'].includes(view)}
+                  onClick={() => setView('cart')}
+                />
+              </>
             ) : (
-              <NavItem
-                icon={ShoppingBag}
-                label="Carrito"
-                badge={cartCount}
-                active={['cart', 'checkout', 'confirmation'].includes(view)}
-                onClick={() => setView('cart')}
-              />
+              <NavItem icon={LayoutDashboard} label="Mi panel" active={view === 'provider'} onClick={() => setView('provider')} />
             )}
           </nav>
           {user ? (
@@ -246,10 +252,14 @@ export default function Header() {
           )}
         </div>
       </div>
-      <div className="px-4 pb-3 md:hidden">
-        <SearchBar className="flex" />
-      </div>
-      {role === 'cliente' && <EventBar />}
+      {isClient && (
+        <>
+          <div className="px-4 pb-3 md:hidden">
+            <SearchBar className="flex" />
+          </div>
+          <EventBar />
+        </>
+      )}
     </header>
   );
 }

@@ -20,6 +20,12 @@ const AppContext = createContext(null);
 export const COUPONS = { BIENVENIDAHOMEPAGE: 0.1, PLANIFY5: 0.05 };
 export const PLATFORM_FEE_RATE = 0.04;
 
+// Vistas que puede abrir cada rol; la primera es su inicio
+export const ROLE_VIEWS = {
+  cliente: ['explore', 'budget', 'cart', 'checkout', 'confirmation', 'reservations', 'agenda', 'chat'],
+  proveedor: ['provider'],
+};
+
 export function AppProvider({ children }) {
   const [user, setUser] = useState(null);
   const [role, setRole] = useState('cliente');

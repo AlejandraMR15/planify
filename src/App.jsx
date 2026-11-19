@@ -1,5 +1,5 @@
 import { useEffect } from 'react';
-import { useApp } from './context/AppContext';
+import { useApp, ROLE_VIEWS } from './context/AppContext';
 import Header from './components/Header';
 import AuthModal from './components/AuthModal';
 import ServiceDetailModal from './components/ServiceDetailModal';
@@ -27,8 +27,13 @@ const VIEWS = {
 };
 
 export default function App() {
-  const { view } = useApp();
-  const View = VIEWS[view] || Marketplace;
+  const { view, setView, role } = useApp();
+  const allowed = ROLE_VIEWS[role].includes(view);
+  const View = VIEWS[allowed ? view : ROLE_VIEWS[role][0]];
+
+  useEffect(() => {
+    if (!allowed) setView(ROLE_VIEWS[role][0]);
+  }, [allowed, role, setView]);
 
   useEffect(() => {
     window.scrollTo({ top: 0 });
