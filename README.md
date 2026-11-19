@@ -9,6 +9,10 @@ npm run dev
 
 ## Compartir la página
 
+**Enlace permanente:** https://alejandramr15.github.io/planify/ (no necesita consola abierta).
+
+Cada `git push` a `main` vuelve a publicarlo solo en un par de minutos (`.github/workflows/deploy.yml`). Para probar en otros dispositivos sin subir cambios:
+
 - **Misma red (Wi-Fi):** `npm run dev` muestra una dirección `Network: http://…:5173`. Ábrela desde cualquier dispositivo conectado a esa red. Si no carga, permite Node.js en el Firewall de Windows.
 - **Cualquier persona con internet:** `npm run publico` compila la app y muestra un enlace `https://….trycloudflare.com`. Funciona mientras la consola siga abierta y cambia cada vez que se ejecuta.
 
